@@ -1,5 +1,9 @@
 # Bankmonitor Global Payment Service
 
+## AI használat
+
+**Claude chat** - ingyenes változat, Sonnet 5
+
 ## Tartalomjegyzék
 
 - [Architektúra és döntések](#architektúra-és-döntések)
@@ -47,18 +51,15 @@ csomag a sikeres utalások külvilág felé történő továbbításáért (ld. 
 2. Felállítottam a projektvázat: buildelhető Spring Boot backend (Maven, H2, layered/feature csomagszerkezet)
    és buildelhető React+TS frontend (Vite, routing 3 képernyőre), hogy a további munka azonnal
    inkrementálisan, futtatható állapotban tartható legyen.
-3. A tervezést és a haladó munkát ebben a README-ben és a [PROMPTS.md](PROMPTS.md)-ben vezetem — külön jegyzetelő eszközt (Jira, Notion) nem használtam a
-   feladat méretéhez képest.
-4. **A backend domain rétegével kezdtem** (Account → Transfer → Idempotency → ExchangeRate client →
-   Integration event), mert a frontend a backend API-szerződésétől függ; ha fordítva indulok, a frontend
-   feltételezésekre épülne, amiket utólag módosítani kellene.
+3. A backend domain rétegével kezdtem (Account → Transfer → Idempotency → ExchangeRate client →
+   Integration event)
 
 ## Edge case-ek
 
 
 ## TODO-lista
 
-1. **Backend + perzisztencia** (Account, Transfer entitások, repository-k)
+1. **Backend** (Account, Transfer entitások, repository-k, H2)
 2. **controller/service/repository rétegek**
 3. **Idempotencia-kezelés**
 4. **Mockolt árfolyam API + reziliencia** (retry/timeout) — ezután jöhet a devizakonverziós eset.
