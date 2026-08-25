@@ -2,17 +2,10 @@ import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { createAccount, fetchAccounts } from '../api/client'
 import type { Account, Currency } from '../api/types'
+import { formatCurrency, formatDateTime } from '../utils/format'
 import './AccountsPage.css'
 
 const CURRENCIES: Currency[] = ['EUR', 'USD', 'HUF']
-
-function formatBalance(balance: number, currency: Currency): string {
-  return new Intl.NumberFormat('hu-HU', { style: 'currency', currency }).format(balance)
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString('hu-HU')
-}
 
 export default function AccountsPage() {
   const [accounts, setAccounts] = useState<Account[]>([])
@@ -74,7 +67,7 @@ export default function AccountsPage() {
     <section className="accounts-page">
       <h1>Számlák</h1>
 
-      <form className="accounts-form" onSubmit={handleSubmit}>
+      <form className="form-card" onSubmit={handleSubmit}>
         <h2>Új számla</h2>
 
         <div className="form-row">
@@ -154,8 +147,8 @@ export default function AccountsPage() {
                 <tr key={account.id}>
                   <td>{account.owner}</td>
                   <td>{account.currency}</td>
-                  <td>{formatBalance(account.balance, account.currency)}</td>
-                  <td>{formatDate(account.createdAt)}</td>
+                  <td>{formatCurrency(account.balance, account.currency)}</td>
+                  <td>{formatDateTime(account.createdAt)}</td>
                 </tr>
               ))}
             </tbody>

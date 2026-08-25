@@ -78,7 +78,7 @@
 6. **Konkurencia-védelem** - done
 7. **Frontend: Számlák képernyő** - done
 8. **Frontend: Tranzakciók képernyő** - done
-9. **Frontend: Utalások képernyő.**
+9. **Frontend: Utalások képernyő** - done
 10. **Tesztek** (backend unit + integrációs a konkurenciára és idempotenciára; frontend komponens/E2E) —
    párhuzamosan íródnak az egyes lépésekkel, nem a végén egyben.
 11. **RendszerIntegráció**
@@ -89,12 +89,8 @@
 
 **Backend:** Manuálisan, Swagger UI-n teszteltem
 
-**Frontend:** a Számlák és a Tranzakciók képernyőt is manuálisan, egy headless böngészőn (Playwright)
-keresztül vezérelt forgatókönyvvel ellenőriztem: számlalista betöltése, új számla létrehozása a formon
-keresztül, majd az új sor megjelenése a táblázatban újratöltés nélkül; a Tranzakciók képernyőnél pedig
-azt, hogy a backendről lekért utalások (sikeres azonos devizás, sikertelen fedezethiány miatt, sikeres
-devizakonverziós) helyesen jelennek meg a számla-tulajdonos nevére feloldva, a megfelelő árfolyammal
-és állapot-jelöléssel — mindkét esetben konzolhiba (pl. CORS) nélkül.
+**Frontend:** mindhárom képernyőt (Számlák, Utalás, Tranzakciók) manuálisan, headless böngészőn
+(Playwright) keresztül vezérelt forgatókönyvvel teszteltem, konzolhiba nélkül.
 
 ## Éles üzem
 

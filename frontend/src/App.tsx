@@ -1,5 +1,6 @@
 import { Navigate, NavLink, Route, Routes } from 'react-router-dom'
 import AccountsPage from './pages/AccountsPage'
+import TransferPage from './pages/TransferPage'
 import TransactionsPage from './pages/TransactionsPage'
 import './App.css'
 
@@ -10,6 +11,9 @@ function App() {
         <NavLink to="/accounts" className={({ isActive }) => (isActive ? 'active' : undefined)}>
           Számlák
         </NavLink>
+        <NavLink to="/transfer" className={({ isActive }) => (isActive ? 'active' : undefined)}>
+          Utalás
+        </NavLink>
         <NavLink to="/transactions" className={({ isActive }) => (isActive ? 'active' : undefined)}>
           Tranzakciók
         </NavLink>
@@ -18,6 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/accounts" replace />} />
           <Route path="/accounts" element={<AccountsPage />} />
+          <Route path="/transfer" element={<TransferPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
         </Routes>
       </main>

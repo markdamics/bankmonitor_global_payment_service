@@ -1,15 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { fetchAccounts, fetchTransfers } from '../api/client'
-import type { Account, Currency, Transfer } from '../api/types'
+import type { Account, Transfer } from '../api/types'
+import { formatCurrency, formatDateTime } from '../utils/format'
 import './TransactionsPage.css'
-
-function formatAmount(amount: number, currency: Currency): string {
-  return new Intl.NumberFormat('hu-HU', { style: 'currency', currency }).format(amount)
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString('hu-HU')
-}
 
 export default function TransactionsPage() {
   const [transfers, setTransfers] = useState<Transfer[]>([])
@@ -76,9 +69,9 @@ export default function TransactionsPage() {
                 <td>{ownerLabel(transfer.sourceAccountId)}</td>
                 <td>{ownerLabel(transfer.targetAccountId)}</td>
                 <td>
-                  {formatAmount(transfer.sourceAmount, transfer.sourceCurrency)}
+                  {formatCurrency(transfer.sourceAmount, transfer.sourceCurrency)}
                   {transfer.sourceCurrency !== transfer.targetCurrency && (
-                    <> &rarr; {formatAmount(transfer.targetAmount, transfer.targetCurrency)}</>
+                    <> &rarr; {formatCurrency(transfer.targetAmount, transfer.targetCurrency)}</>
                   )}
                 </td>
                 <td>{transfer.exchangeRate !== null ? transfer.exchangeRate.toFixed(6) : '—'}</td>
@@ -87,7 +80,7 @@ export default function TransactionsPage() {
                     {transfer.status === 'COMPLETED' ? 'Sikeres' : 'Sikertelen'}
                   </span>
                 </td>
-                <td>{formatDate(transfer.createdAt)}</td>
+                <td>{formatDateTime(transfer.createdAt)}</td>
               </tr>
             ))}
           </tbody>

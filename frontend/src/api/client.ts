@@ -8,6 +8,13 @@ export interface CreateAccountRequest {
   initialBalance: number
 }
 
+export interface CreateTransferRequest {
+  sourceAccountId: string
+  targetAccountId: string
+  amount: number
+  idempotencyKey: string
+}
+
 async function parseErrorMessage(response: Response): Promise<string> {
   try {
     const body = await response.json()
@@ -42,6 +49,18 @@ export async function createAccount(request: CreateAccountRequest): Promise<Acco
 
 export async function fetchTransfers(): Promise<Transfer[]> {
   const response = await fetch(`${API_BASE_URL}/api/transfers`)
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response))
+  }
+  return response.json()
+}
+
+export async function createTransfer(request: CreateTransferRequest): Promise<Transfer> {
+  const response = await fetch(`${API_BASE_URL}/api/transfers`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  })
   if (!response.ok) {
     throw new Error(await parseErrorMessage(response))
   }

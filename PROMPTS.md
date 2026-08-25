@@ -48,3 +48,16 @@ a számla-azonosítókat tulajdonos névre oldja fel, devizakonverziós utalásn
 A közös tábla- és hibaüzenet-stílusokat kiemelte az `App.css`-be, hogy a Számlák képernyő ne duplikálja
 őket. Headless böngészővel (Playwright) valósan kipróbálta, vizuális regressziót is ellenőrizve a
 Számlák képernyőn. Lásd: [TransactionsPage.tsx](frontend/src/pages/TransactionsPage.tsx).
+
+---
+
+7/Kérés: "Create the transfer page with selectable source and target accounts, an input field for the amounnt, write the backend endpoints calling function in client.ts and style the page"
+
+7/Válasz: Elkészítette az Utalás képernyőt: forrás- és célszámla-választó (egyenleggel feltüntetve),
+összeg megadása, a kérés idempotencia-kulcsát a kliens generálja (`crypto.randomUUID()`). A `POST
+/api/transfers` válasza alapján zölden a sikeres (devizakonverzió esetén az árfolyammal együtt), pirosan
+a fedezethiány miatt sikertelen kimenetet jelzi. A harmadik oldal duplikált form- és gombstílusait
+kiemelte az `App.css`-be (`form-card`), a szám- és dátumformázókat pedig egy közös `utils/format.ts`-be.
+Headless böngészővel (Playwright) mindkét kimenetet (siker, fedezethiány) valósan kipróbálta, és
+ellenőrizte, hogy a Számlák/Tranzakciók képernyők nem törtek el a stílus-kiemeléstől. Lásd:
+[TransferPage.tsx](frontend/src/pages/TransferPage.tsx).
