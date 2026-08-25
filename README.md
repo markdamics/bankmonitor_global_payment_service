@@ -2,7 +2,7 @@
 
 ## AI használat
 
-**Claude chat** - ingyenes változat, Sonnet 5
+**Claude chat, Claude code** - Sonnet 5
 
 ## Tartalomjegyzék
 
@@ -22,12 +22,8 @@
 | Nyelv       | Java 21                                    | A feladat követelménye miatt |
 | Framework   | Spring Boot 4.1.0                          | A feladat követelménye miatt |
 | Build tool  | Maven                                      | A feladat követelménye miatt valamint Gradle-ben nincs tapasztalatom|
-| Adatbázis   | H2 (in-memory)                             |  |
-
-Tervezett rétegek feature-önként: `*Controller` (REST) → `*Service` (üzleti logika, tranzakciókezelés) →
-`*Repository` (Spring Data JPA) → `*Entity`/`*Dto`. Az `exchangerate` csomag felelős a mockolt külső
-árfolyam API-ért és annak reziliens hívásáért; az `idempotency` csomag a kulcs-kezelésért; az `integration`
-csomag a sikeres utalások külvilág felé történő továbbításáért (ld. [Edge case-ek](#edge-case-ek)).
+| Adatbázis   | H2 (in-memory)                             |  Ezen a szinten, kis felhasználásra felesleges egy SQL alapú adatbázis|
+| Loggolás    | SLF4J                                      | Alapértelmezett Spring boot logolás, nem volt indok mást használni  |
 
 ### Frontend
 
