@@ -58,19 +58,13 @@
 
 ## Edge case-ek
 
-- **Saját magának küldött utalás:** ugyanaz a forrás- és célszámla `400 Bad Request`-et eredményez.
-- **Fedezethiány:** ha a forrásszámla egyenlege kevesebb az utalt összegnél, ez nem hibaként, hanem
-  várt üzleti kimenetként kezelt — a próbálkozás `FAILED` állapotú Transfer rekordként mentésre kerül
-  (a válasz `201 Created`, a `status` mezőt kell nézni), az egyenlegek pedig változatlanok maradnak.
-- **Idempotencia-kulcs újrafelhasználása azonos payloaddal:** a korábbi Transfer rekord kerül visszaadásra
-  új mentés/üzleti logika futtatása nélkül, `200 OK` válasszal (szemben az első, `201 Created` válasszal).
-  Ez azonos módon működik `COMPLETED` és `FAILED` transferekre is.
-- **Idempotencia-kulcs újrafelhasználása eltérő payloaddal** (más számla vagy összeg): `409 Conflict`,
-  mivel ez feltehetően kliensoldali hiba (kulcsütközés), nem egy legitim ismétlés.
-- **Devizák eltérnek a két számla között:** az árfolyamot a mockolt külső API-ból kéri le a rendszer,
-  és a célösszeget az alkalmazott árfolyammal együtt tárolja a Transfer
-  rekord. A fedezet-ellenőrzés a forrás pénznemében, a konverzió előtt történik, hogy egy eleve bukásra
-  ítélt utalás ne fizesse meg egy külső hívás árát.
+- Saját magának küldött utalás
+- Fedezethiány
+- Idempotencia-kulcs újrafelhasználása azonos payloaddal
+- Idempotencia-kulcs újrafelhasználása eltérő payloaddal
+- Devizák eltérnek a két számla között
+- Ugyanazt a számlát egyszerre érintő konkurens utalások
+- Két konkurens kérés ugyanazzal, még nem látott idempotencia-kulccsal
 
 ## TODO-lista
 
@@ -79,16 +73,28 @@
 3. **Swagger és logolás** - done
 4. **Idempotencia-kezelés** - done
 5. **Mockolt árfolyam API + reziliencia** - retry/timeout - done
-6. **Konkurencia-védelem**
+6. **Konkurencia-védelem** - done
 7. **Frontend: Számlák képernyő**.
 8. **Frontend: Tranzakciók képernyő.**
 9. **Frontend: Utalások képernyő.**
 10. **Tesztek** (backend unit + integrációs a konkurenciára és idempotenciára; frontend komponens/E2E) —
    párhuzamosan íródnak az egyes lépésekkel, nem a végén egyben.
-11. **Nem implementált funkctiók amikre nem volt időm vagy csak production verzióban implementálnám leírása** - ??????
+11. **RendszerIntegráció**
+12. **Nem implementált funkctiók amikre nem volt időm vagy csak production verzióban implementálnám leírása** - ??????
 
 ## Éles üzem
 
+- **Idempotencia-kulcs azonnali lefoglalása:** jelenleg egy konkurens, ugyanazzal a (még nem látott)
+  kulccsal érkező kérés csak a mentés pillanatában (az adatbázis unique constraint-jén) bukik el
+  `409`-cel, nem a kérés legelején. Éles rendszerben egy külön, azonnal commitolt "lefoglalás" lépést
+  (pl. saját idempotencia-kulcs tábla PENDING/COMPLETED/FAILED státusszal, vagy egy elosztott lock
+  Redis-ben TTL-lel) vezetnék be, hogy a vesztes kérés ne is fusson bele a teljes üzleti logikába.
+- **Megfigyelhetőség:** strukturált (JSON) logolás, metrikák (pl. Micrometer + Prometheus) és
+  disztribúiós tracing hiányzik éles üzemhez.
+- **Adatbázis:** H2 in-memory helyett egy valódi, replikált SQL adatbázis (pl. PostgreSQL) kellene,
+  migrációkezeléssel
+- **Autentikáció/autorizáció:** jelenleg bárki bármely számlát elérheti — éles rendszerben ez
+  megköveteli a felhasználó-számla tulajdonjog ellenőrzését minden végponton.
 
 ## Futtatás
 

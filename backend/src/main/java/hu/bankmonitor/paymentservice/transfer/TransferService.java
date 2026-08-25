@@ -10,6 +10,7 @@ import hu.bankmonitor.paymentservice.transfer.dto.CreateTransferRequest;
 import hu.bankmonitor.paymentservice.transfer.dto.TransferResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,17 +51,24 @@ public class TransferService {
             throw new BadRequestException("Source and target account must differ");
         }
 
-        Account source = accountService.findAccountOrThrow(request.sourceAccountId());
-        Account target = accountService.findAccountOrThrow(request.targetAccountId());
+        Account first;
+        Account second;
+        if (request.sourceAccountId().compareTo(request.targetAccountId()) < 0) {
+            first = accountService.findAccountForUpdateOrThrow(request.sourceAccountId());
+            second = accountService.findAccountForUpdateOrThrow(request.targetAccountId());
+        } else {
+            first = accountService.findAccountForUpdateOrThrow(request.targetAccountId());
+            second = accountService.findAccountForUpdateOrThrow(request.sourceAccountId());
+        }
+        Account source = first.getId().equals(request.sourceAccountId()) ? first : second;
+        Account target = first.getId().equals(request.sourceAccountId()) ? second : first;
 
         BigDecimal amount = request.amount();
-
-        // Todo: Concurrent request
 
         if (source.getBalance().compareTo(amount) < 0) {
             Transfer failed = new Transfer(source, target, source.getCurrency(), target.getCurrency(),
                     amount, amount, null, TransferStatus.FAILED, request.idempotencyKey());
-            failed = transferRepository.save(failed);
+            failed = saveOrThrowOnConcurrentDuplicate(failed);
             log.warn("Transfer {} FAILED: insufficient funds on account {} (balance={}, requested={})",
                     failed.getId(), source.getId(), source.getBalance(), amount);
             return new TransferCreationResult(TransferResponse.from(failed), true);
@@ -81,12 +89,23 @@ public class TransferService {
 
         Transfer transfer = new Transfer(source, target, source.getCurrency(), target.getCurrency(),
                 amount, targetAmount, exchangeRate, TransferStatus.COMPLETED, request.idempotencyKey());
-        transfer = transferRepository.save(transfer);
+        transfer = saveOrThrowOnConcurrentDuplicate(transfer);
 
         log.info("Transfer {} COMPLETED: {} {} -> {} {} (rate={})",
                 transfer.getId(), amount, source.getCurrency(), targetAmount, target.getCurrency(), exchangeRate);
 
         return new TransferCreationResult(TransferResponse.from(transfer), true);
+    }
+
+    private Transfer saveOrThrowOnConcurrentDuplicate(Transfer transfer) {
+        try {
+            return transferRepository.saveAndFlush(transfer);
+        } catch (DataIntegrityViolationException ex) {
+            log.warn("Idempotency key '{}' was concurrently claimed by another in-flight request",
+                    transfer.getIdempotencyKey());
+            throw new ConflictException("A request with idempotency key '" + transfer.getIdempotencyKey()
+                    + "' is already being processed");
+        }
     }
 
     private TransferCreationResult replay(Transfer existing, CreateTransferRequest request) {

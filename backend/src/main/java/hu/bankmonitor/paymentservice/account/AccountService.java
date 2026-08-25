@@ -52,4 +52,12 @@ public class AccountService {
                     return new NotFoundException("Account not found: " + id);
                 });
     }
+
+    public Account findAccountForUpdateOrThrow(UUID id) {
+        return accountRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> {
+                    log.warn("Account not found: {}", id);
+                    return new NotFoundException("Account not found: " + id);
+                });
+    }
 }

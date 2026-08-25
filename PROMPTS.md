@@ -30,3 +30,14 @@
 4/Válasz: Létrehozott egy mockolt, „flaky” külső árfolyam API-t (véletlenszerű 503-ak, 100–900 ms
 késleltetés) egy reziliens klienssel (retry exponenciális backoff-fal, timeout-tal), majd ezt bekötötte
 a TransferService-be a valódi devizakonverzióhoz. Lásd: [exchangerate/](backend/src/main/java/hu/bankmonitor/paymentservice/exchangerate/).
+
+---
+
+5/Kérés: "Do todo item number 6"
+
+5/Válasz: Két konkurencia-védelmet épített be a TransferService-be: pesszimista zárolást
+(`SELECT ... FOR UPDATE`) mindkét érintett számlára, fix (azonosító szerinti) sorrendben a holtpont
+elkerülésére, valamint az idempotencia-kulcs unique constraint-jének kihasználását a konkurens,
+azonos kulcsú kérések közötti versenyhelyzet 409-cel történő lezárására. Valós párhuzamos curl
+hívásokkal tesztelte mindkettőt. Egy ismert korlátot (a versenyhelyzet csak mentéskor, nem a kérés
+legelején dől el) az Éles üzem szekcióba írt. Lásd: [TransferService.java](backend/src/main/java/hu/bankmonitor/paymentservice/transfer/TransferService.java).
