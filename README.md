@@ -25,6 +25,7 @@
 | Adatbázis   | H2 (in-memory)                             |  Ezen a szinten, kis felhasználásra felesleges egy SQL alapú adatbázis|
 | Loggolás    | SLF4J                                      | Alapértelmezett Spring boot logolás, nem volt indok mást használni  |
 | API dokumentáció / teszt | springdoc-openapi (Swagger UI) | Gyors kézi API-tesztelés Postman/curl nélkül, automatikusan generált a controllerekből |
+| Tesztelés | Swagger                                      | Könnyebb tesztelni a backend endpointokat frontend nélkül |
 
 ### Frontend
 
@@ -52,20 +53,32 @@
 
 ## Edge case-ek
 
+- **Saját magának küldött utalás:** ugyanaz a forrás- és célszámla `400 Bad Request`-et eredményez.
+- **Fedezethiány:** ha a forrásszámla egyenlege kevesebb az utalt összegnél, ez nem hibaként, hanem
+  várt üzleti kimenetként kezelt — a próbálkozás `FAILED` állapotú Transfer rekordként mentésre kerül
+  (a válasz `201 Created`, a `status` mezőt kell nézni), az egyenlegek pedig változatlanok maradnak.
+- **Idempotencia-kulcs újrafelhasználása azonos payloaddal:** a korábbi Transfer rekord kerül visszaadásra
+  új mentés/üzleti logika futtatása nélkül, `200 OK` válasszal (szemben az első, `201 Created` válasszal).
+  Ez azonos módon működik `COMPLETED` és `FAILED` transferekre is.
+- **Idempotencia-kulcs újrafelhasználása eltérő payloaddal** (más számla vagy összeg): `409 Conflict`,
+  mivel ez feltehetően kliensoldali hiba (kulcsütközés), nem egy legitim ismétlés.
+- **Devizák eltérnek a két számla között:** egyelőre `400 Bad Request` — a konverziós logika a
+  mockolt árfolyam API-val együtt kerül implementálásra (ld. TODO-lista #5).
 
 ## TODO-lista
 
 1. **Backend** (Account, Transfer entitások) - done
 2. **controller/service/repository rétegek** - Utalási logika implementálása - done
-3. **Idempotencia-kezelés**
-4. **Mockolt árfolyam API + reziliencia** (retry/timeout) — ezután jöhet a devizakonverziós eset.
-5. **Konkurencia-védelem** (zárolás) — miután a happy path stabil, mert így tesztelhető is izoláltan.
-6. **Frontend: Számlák képernyő**.
-7. **Frontend: Tranzakciók képernyő.**
-8. **Frontend: Utalások képernyő.**
-9. **Tesztek** (backend unit + integrációs a konkurenciára és idempotenciára; frontend komponens/E2E) —
+3. **Swagger és logolás** - done
+4. **Idempotencia-kezelés** - done
+5. **Mockolt árfolyam API + reziliencia** (retry/timeout) — ezután jöhet a devizakonverziós eset.
+6. **Konkurencia-védelem**
+7. **Frontend: Számlák képernyő**.
+8. **Frontend: Tranzakciók képernyő.**
+9. **Frontend: Utalások képernyő.**
+10. **Tesztek** (backend unit + integrációs a konkurenciára és idempotenciára; frontend komponens/E2E) —
    párhuzamosan íródnak az egyes lépésekkel, nem a végén egyben.
-10. **Nem implementált funkctiók amikre nem volt időm vagy csak production verzióban implementálnám leírása** - ??????
+11. **Nem implementált funkctiók amikre nem volt időm vagy csak production verzióban implementálnám leírása** - ??????
 
 ## Éles üzem
 
