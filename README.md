@@ -51,16 +51,15 @@ csomag a sikeres utalások külvilág felé történő továbbításáért (ld. 
 2. Felállítottam a projektvázat: buildelhető Spring Boot backend (Maven, H2, layered/feature csomagszerkezet)
    és buildelhető React+TS frontend (Vite, routing 3 képernyőre), hogy a további munka azonnal
    inkrementálisan, futtatható állapotban tartható legyen.
-3. A backend domain rétegével kezdtem (Account → Transfer → Idempotency → ExchangeRate client →
-   Integration event)
+3. A backend domain rétegével kezdtem.
 
 ## Edge case-ek
 
 
 ## TODO-lista
 
-1. **Backend** (Account, Transfer entitások, repository-k, H2)
-2. **controller/service/repository rétegek**
+1. **Backend** (Account, Transfer entitások) - done
+2. **controller/service/repository rétegek** - Utalási logika implementálása - done
 3. **Idempotencia-kezelés**
 4. **Mockolt árfolyam API + reziliencia** (retry/timeout) — ezután jöhet a devizakonverziós eset.
 5. **Konkurencia-védelem** (zárolás) — miután a happy path stabil, mert így tesztelhető is izoláltan.
