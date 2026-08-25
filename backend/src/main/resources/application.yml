@@ -21,6 +21,19 @@ spring:
 server:
   port: 8080
 
+exchangerate:
+  base-url: http://localhost:${server.port}
+  max-attempts: 3
+  initial-backoff-ms: 200
+  connect-timeout-ms: 500
+  read-timeout-ms: 1000
+
+mock:
+  exchange-rate:
+    error-rate: 0.3
+    min-delay-ms: 100
+    max-delay-ms: 900
+
 logging:
   file:
     name: logs/global-payment-service.log

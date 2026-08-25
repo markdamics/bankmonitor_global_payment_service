@@ -5,6 +5,7 @@ import hu.bankmonitor.paymentservice.account.AccountService;
 import hu.bankmonitor.paymentservice.common.exception.BadRequestException;
 import hu.bankmonitor.paymentservice.common.exception.ConflictException;
 import hu.bankmonitor.paymentservice.common.exception.NotFoundException;
+import hu.bankmonitor.paymentservice.exchangerate.ExchangeRateClient;
 import hu.bankmonitor.paymentservice.transfer.dto.CreateTransferRequest;
 import hu.bankmonitor.paymentservice.transfer.dto.TransferResponse;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,10 +26,13 @@ public class TransferService {
 
     private final TransferRepository transferRepository;
     private final AccountService accountService;
+    private final ExchangeRateClient exchangeRateClient;
 
-    public TransferService(TransferRepository transferRepository, AccountService accountService) {
+    public TransferService(TransferRepository transferRepository, AccountService accountService,
+                            ExchangeRateClient exchangeRateClient) {
         this.transferRepository = transferRepository;
         this.accountService = accountService;
+        this.exchangeRateClient = exchangeRateClient;
     }
 
     @Transactional
@@ -48,13 +53,6 @@ public class TransferService {
         Account source = accountService.findAccountOrThrow(request.sourceAccountId());
         Account target = accountService.findAccountOrThrow(request.targetAccountId());
 
-        if (source.getCurrency() != target.getCurrency()) {
-            // TODO: cross-currency conversion via the exchange rate client (see TODO-lista #5)
-            log.warn("Rejected transfer {} -> {}: currency mismatch ({} vs {})",
-                    source.getId(), target.getId(), source.getCurrency(), target.getCurrency());
-            throw new BadRequestException("Cross-currency transfers are not yet supported");
-        }
-
         BigDecimal amount = request.amount();
 
         // Todo: Concurrent request
@@ -68,14 +66,25 @@ public class TransferService {
             return new TransferCreationResult(TransferResponse.from(failed), true);
         }
 
+        BigDecimal targetAmount;
+        BigDecimal exchangeRate;
+        if (source.getCurrency() == target.getCurrency()) {
+            targetAmount = amount;
+            exchangeRate = null;
+        } else {
+            exchangeRate = exchangeRateClient.getRate(source.getCurrency(), target.getCurrency());
+            targetAmount = amount.multiply(exchangeRate).setScale(4, RoundingMode.HALF_UP);
+        }
+
         source.setBalance(source.getBalance().subtract(amount));
-        target.setBalance(target.getBalance().add(amount));
+        target.setBalance(target.getBalance().add(targetAmount));
 
         Transfer transfer = new Transfer(source, target, source.getCurrency(), target.getCurrency(),
-                amount, amount, null, TransferStatus.COMPLETED, request.idempotencyKey());
+                amount, targetAmount, exchangeRate, TransferStatus.COMPLETED, request.idempotencyKey());
         transfer = transferRepository.save(transfer);
 
-        log.info("Transfer {} COMPLETED: {} -> {}, amount={}", transfer.getId(), source.getId(), target.getId(), amount);
+        log.info("Transfer {} COMPLETED: {} {} -> {} {} (rate={})",
+                transfer.getId(), amount, source.getCurrency(), targetAmount, target.getCurrency(), exchangeRate);
 
         return new TransferCreationResult(TransferResponse.from(transfer), true);
     }

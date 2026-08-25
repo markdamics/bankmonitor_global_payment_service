@@ -22,3 +22,11 @@
 3/Kérés: "Add logging to the services"
 
 3/Válasz: A service-khez hozzá lettek adva a logok, ebben az esetben csak info és debug logok lettek hozzá adva
+
+---
+
+4/Kérés: "Do the todo item number 5, Implement the mock API based on the assignment pdf"
+
+4/Válasz: Létrehozott egy mockolt, „flaky” külső árfolyam API-t (véletlenszerű 503-ak, 100–900 ms
+késleltetés) egy reziliens klienssel (retry exponenciális backoff-fal, timeout-tal), majd ezt bekötötte
+a TransferService-be a valódi devizakonverzióhoz. Lásd: [exchangerate/](backend/src/main/java/hu/bankmonitor/paymentservice/exchangerate/).

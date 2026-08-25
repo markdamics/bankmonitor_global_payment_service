@@ -26,6 +26,7 @@
 | Loggolás    | SLF4J                                      | Alapértelmezett Spring boot logolás, nem volt indok mást használni  |
 | API dokumentáció / teszt | springdoc-openapi (Swagger UI) | Gyors kézi API-tesztelés Postman/curl nélkül, automatikusan generált a controllerekből |
 | Tesztelés | Swagger                                      | Könnyebb tesztelni a backend endpointokat frontend nélkül |
+| Külső árfolyam API mockolása | Saját `/mock/exchange-rate` endpoint + `RestClient` | Valódi HTTP-hívást és reziliencia-logikát (retry/backoff/timeout) gyakorol, nem csak in-process szimulációt |
 
 ### Frontend
 
@@ -36,6 +37,10 @@
 | Routing           | react-router-dom                 | Három elkülönült képernyő — kliensoldali routing egyszerű megoldás erre a méretre. |
 | Állapotkezelés    | React beépített state vagy redux, most még nem eldöntött |  |
 | Styling           | Sima CSS           | Külső UI library használata felesleges a feladat mérete miatt valamit AI-al készített css styling egyszerűbb és gyorsabb |
+
+### Amit eldöntöttem
+
+- **Utalás fedezethiány esetén** Annak ellenére, hogy az utalás nem lehetséges fedezethiány miatt, belekerül az   utalások táblába `Failed` státusszal azért, hogy ennek is legyen nyoma
 
 ### Amit tudatosan elvetettem
 
@@ -62,8 +67,10 @@
   Ez azonos módon működik `COMPLETED` és `FAILED` transferekre is.
 - **Idempotencia-kulcs újrafelhasználása eltérő payloaddal** (más számla vagy összeg): `409 Conflict`,
   mivel ez feltehetően kliensoldali hiba (kulcsütközés), nem egy legitim ismétlés.
-- **Devizák eltérnek a két számla között:** egyelőre `400 Bad Request` — a konverziós logika a
-  mockolt árfolyam API-val együtt kerül implementálásra (ld. TODO-lista #5).
+- **Devizák eltérnek a két számla között:** az árfolyamot a mockolt külső API-ból kéri le a rendszer,
+  és a célösszeget az alkalmazott árfolyammal együtt tárolja a Transfer
+  rekord. A fedezet-ellenőrzés a forrás pénznemében, a konverzió előtt történik, hogy egy eleve bukásra
+  ítélt utalás ne fizesse meg egy külső hívás árát.
 
 ## TODO-lista
 
@@ -71,7 +78,7 @@
 2. **controller/service/repository rétegek** - Utalási logika implementálása - done
 3. **Swagger és logolás** - done
 4. **Idempotencia-kezelés** - done
-5. **Mockolt árfolyam API + reziliencia** (retry/timeout) — ezután jöhet a devizakonverziós eset.
+5. **Mockolt árfolyam API + reziliencia** - retry/timeout - done
 6. **Konkurencia-védelem**
 7. **Frontend: Számlák képernyő**.
 8. **Frontend: Tranzakciók képernyő.**
