@@ -1,0 +1,20 @@
+# Backend (Maven)
+backend/target/
+*.class
+
+# Frontend (Node / Vite)
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.sw?

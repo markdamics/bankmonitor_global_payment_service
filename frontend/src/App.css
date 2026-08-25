@@ -1,0 +1,21 @@
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.app-nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.app-nav a {
+  text-decoration: none;
+  color: inherit;
+  font-weight: 600;
+}
+
+.app-nav a.active {
+  text-decoration: underline;
+}
