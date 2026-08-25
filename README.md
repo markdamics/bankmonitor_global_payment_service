@@ -28,6 +28,8 @@
 | API dokumentáció / teszt | springdoc-openapi (Swagger UI) | Gyors kézi API-tesztelés Postman/curl nélkül, automatikusan generált a controllerekből |
 | Tesztelés | Swagger                                      | Könnyebb tesztelni a backend endpointokat frontend nélkül |
 | Külső árfolyam API mockolása | Saját `/mock/exchange-rate` endpoint + `RestClient` | Valódi HTTP-hívást és reziliencia-logikát (retry/backoff/timeout) gyakorol, nem csak in-process szimulációt |
+| Tesztelés (unit) | JUnit 5 + Mockito (`spring-boot-starter-test`) | Már benne van a starterben, nem kellett hozzáadni semmit |
+| Tesztelés (integrációs, HTTP réteg) | `MockMvc` (`spring-boot-webmvc-test`) | Konkurens kéréseket valós szálakkal, valós H2-vel, de a lassú, teljes szerverindítás nélkül lehet tesztelni |
 
 ### Frontend
 
@@ -38,7 +40,6 @@
 | Routing           | react-router-dom                 | Három elkülönült képernyő — kliensoldali routing egyszerű megoldás erre a méretre. |
 | Állapotkezelés    | React beépített state vagy redux, most még nem eldöntött |  |
 | Styling           | Sima CSS           | Külső UI library használata felesleges a feladat mérete miatt valamit AI-al készített css styling egyszerűbb és gyorsabb |
-| Backend elérés dev módban | Spring `WebMvcConfigurer` CORS engedélyezés `/api/**`-re a Vite dev origin (5173) felé | Egyszerűbb, mint egy Vite dev-proxy, és ugyanaz a kliens kód működik dev és production build esetén is |
 
 ### Amit eldöntöttem
 
@@ -79,18 +80,30 @@
 7. **Frontend: Számlák képernyő** - done
 8. **Frontend: Tranzakciók képernyő** - done
 9. **Frontend: Utalások képernyő** - done
-10. **Tesztek** (backend unit + integrációs a konkurenciára és idempotenciára; frontend komponens/E2E) —
-   párhuzamosan íródnak az egyes lépésekkel, nem a végén egyben.
-11. **RendszerIntegráció**
+10. **Tesztek** (backend unit + integrációs a konkurenciára és idempotenciára; frontend komponens/E2E) - done
+11. **RendszerIntegráció** - not done, ezt productionben csinálnám
 12. **Nem implementált funkctiók amikre nem volt időm vagy csak production verzióban implementálnám leírása** 
-- ??????
+- done
+
+## Nem implementált funkctiók
+
+- RendszerIntegráció
 
 ## Tesztelés
 
-**Backend:** Manuálisan, Swagger UI-n teszteltem
+**Backend**:
 
-**Frontend:** mindhárom képernyőt (Számlák, Utalás, Tranzakciók) manuálisan, headless böngészőn
-(Playwright) keresztül vezérelt forgatókönyvvel teszteltem, konzolhiba nélkül.
+- Unit tesztek
+- Integrációs tesztek valódi H2-vel és HTTP réteggel
+- Integrációs tesztek a mockolt külső API-val
+
+**Frontend**:
+
+- Komponens tesztek mindhárom képernyőre (`AccountsPage`, `TransferPage`, `TransactionsPage`),
+  a `client.ts` API-hívásait mockolva
+- Emellett mindhárom képernyőt manuálisan, headless böngészőn (Playwright) keresztül vezérelt
+  forgatókönyvvel is kipróbáltam a fejlesztés közben, konzolhiba nélkül — ez adta a gyors
+  visszajelzést, a fenti tesztek pedig ezt rögzítik ismételhető formában.
 
 ## Éles üzem
 
@@ -104,7 +117,10 @@
 - **Adatbázis:** H2 in-memory helyett egy valódi, replikált SQL adatbázis (pl. PostgreSQL) kellene,
   migrációkezeléssel
 - **Autentikáció/autorizáció:** jelenleg bárki bármely számlát elérheti — éles rendszerben ez
-  megköveteli a felhasználó-számla tulajdonjog ellenőrzését minden végponton.
+  megköveteli a felhasználó-számla tulajdonjog ellenőrzését minden végponton. Titkok kezelése (Vault/secrets manager). Input-validáció szigorítása
+- **Skálázás:** stateless backend instance-ok + horizontális skálázás, terheléses tesztek a konkurens-tranzakció útvonalon. Load Balancer hozzáadása
+- **RendszerIntegráció**
+
 
 ## Futtatás
 

@@ -36,7 +36,7 @@ a TransferService-be a valódi devizakonverzióhoz. Lásd: [exchangerate/](backe
 5/Kérés: "In the frontend create the accounts page with a ccounts table, adding new account action, write the backend endpoints calling function in client.ts and style the page"
 
 5/Válasz: Elkészítette a Számlák képernyőt (lista + új számla létrehozása form), bekötve a backend
-`/api/accounts` végpontjaira, plusz a szükséges backend CORS engedélyt a Vite dev szerver origin-jéhez.[AccountsPage.tsx](frontend/src/pages/AccountsPage.tsx).
+`/api/accounts` végpontjaira, plusz a szükséges backend CORS engedélyt a Vite dev szerver origin-jéhez.[AccountsPage.tsx](frontend/src/pages/AccountsPage.tsx). - nem kellett valtoztatnom semmin
 
 ---
 
@@ -45,9 +45,7 @@ a TransferService-be a valódi devizakonverzióhoz. Lásd: [exchangerate/](backe
 6/Válasz: Elkészítette a Tranzakciók képernyőt: lekéri a `/api/transfers` és `/api/accounts` végpontokat,
 a számla-azonosítókat tulajdonos névre oldja fel, devizakonverziós utalásnál nyíllal jelzi az
 összeg-átváltást és az árfolyamot, a `COMPLETED`/`FAILED` státuszt pedig színes jelölővel jeleníti meg.
-A közös tábla- és hibaüzenet-stílusokat kiemelte az `App.css`-be, hogy a Számlák képernyő ne duplikálja
-őket. Headless böngészővel (Playwright) valósan kipróbálta, vizuális regressziót is ellenőrizve a
-Számlák képernyőn. Lásd: [TransactionsPage.tsx](frontend/src/pages/TransactionsPage.tsx).
+Lásd: [TransactionsPage.tsx](frontend/src/pages/TransactionsPage.tsx). - nem kellett valtoztatnom semmin
 
 ---
 
@@ -56,8 +54,22 @@ Számlák képernyőn. Lásd: [TransactionsPage.tsx](frontend/src/pages/Transact
 7/Válasz: Elkészítette az Utalás képernyőt: forrás- és célszámla-választó (egyenleggel feltüntetve),
 összeg megadása, a kérés idempotencia-kulcsát a kliens generálja (`crypto.randomUUID()`). A `POST
 /api/transfers` válasza alapján zölden a sikeres (devizakonverzió esetén az árfolyammal együtt), pirosan
-a fedezethiány miatt sikertelen kimenetet jelzi. A harmadik oldal duplikált form- és gombstílusait
-kiemelte az `App.css`-be (`form-card`), a szám- és dátumformázókat pedig egy közös `utils/format.ts`-be.
-Headless böngészővel (Playwright) mindkét kimenetet (siker, fedezethiány) valósan kipróbálta, és
-ellenőrizte, hogy a Számlák/Tranzakciók képernyők nem törtek el a stílus-kiemeléstől. Lásd:
-[TransferPage.tsx](frontend/src/pages/TransferPage.tsx).
+a fedezethiány miatt sikertelen kimenetet jelzi. A szám- és dátumformázókat pedig egy közös `utils/format.ts`-be.
+[TransferPage.tsx](frontend/src/pages/TransferPage.tsx). - nem kellett valtoztatnom semmin
+
+---
+
+8/Kérés: "Create the tests for backend nd , todo 10"
+
+8/Válasz: Backend: unit tesztek (`AccountServiceTest`, `TransferServiceTest`, Mockito) az üzleti
+szabályokra, plusz integrációs tesztek MockMvc-vel és valódi `ExecutorService`-szel indított
+párhuzamos szálakkal a konkurencia- és idempotencia-védelemre (`TransferIntegrationTest`), illetve
+a mockolt árfolyam API reziliencia-logikájára valódi futó szerverrel
+(`ExchangeRateClient*IntegrationTest`) — összesen 26 teszt. Útközben talált és kijavított egy Spring
+Boot 4-es csomagáthelyezést (`AutoConfigureMockMvc` új helye, külön `spring-boot-webmvc-test` függőség
+kellett hozzá). Frontend: Vitest + Testing Library beállítása (eddig nem volt bekötve), majd 20
+komponens teszt mindhárom képernyőre, a `client.ts` hívásait mockolva. Egy valós Vite/Vitest
+verzióütközést (`vite.config.ts` típushiba) oldott meg. Az automatizált, repóba bekötött E2E-t
+(Playwright Test futtatóval) tudatosan kihagyta — ezt a README Tesztelés szekciója rögzíti indoklással.
+Lásd: [TransferServiceTest.java](backend/src/test/java/hu/bankmonitor/paymentservice/transfer/TransferServiceTest.java),
+[TransferIntegrationTest.java](backend/src/test/java/hu/bankmonitor/paymentservice/transfer/TransferIntegrationTest.java).
