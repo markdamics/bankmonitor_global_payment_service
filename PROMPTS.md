@@ -33,11 +33,7 @@ a TransferService-be a valódi devizakonverzióhoz. Lásd: [exchangerate/](backe
 
 ---
 
-5/Kérés: "Do todo item number 6"
+5/Kérés: "In the frontend create the accounts page with a ccounts table, adding new account action, write the backend endpoints calling function in client.ts and style the page"
 
-5/Válasz: Két konkurencia-védelmet épített be a TransferService-be: pesszimista zárolást
-(`SELECT ... FOR UPDATE`) mindkét érintett számlára, fix (azonosító szerinti) sorrendben a holtpont
-elkerülésére, valamint az idempotencia-kulcs unique constraint-jének kihasználását a konkurens,
-azonos kulcsú kérések közötti versenyhelyzet 409-cel történő lezárására. Valós párhuzamos curl
-hívásokkal tesztelte mindkettőt. Egy ismert korlátot (a versenyhelyzet csak mentéskor, nem a kérés
-legelején dől el) az Éles üzem szekcióba írt. Lásd: [TransferService.java](backend/src/main/java/hu/bankmonitor/paymentservice/transfer/TransferService.java).
+5/Válasz: Elkészítette a Számlák képernyőt (lista + új számla létrehozása form), bekötve a backend
+`/api/accounts` végpontjaira, plusz a szükséges backend CORS engedélyt a Vite dev szerver origin-jéhez.[AccountsPage.tsx](frontend/src/pages/AccountsPage.tsx).

@@ -10,6 +10,7 @@
 - [Hogyan álltam neki](#hogyan-álltam-neki)
 - [Edge case-ek](#edge-case-ek)
 - [TODO-lista](#todo-lista)
+- [Tesztelés](#tesztelés)
 - [Éles üzem](#éles-üzem)
 - [Futtatás](#futtatás)
 
@@ -37,6 +38,7 @@
 | Routing           | react-router-dom                 | Három elkülönült képernyő — kliensoldali routing egyszerű megoldás erre a méretre. |
 | Állapotkezelés    | React beépített state vagy redux, most még nem eldöntött |  |
 | Styling           | Sima CSS           | Külső UI library használata felesleges a feladat mérete miatt valamit AI-al készített css styling egyszerűbb és gyorsabb |
+| Backend elérés dev módban | Spring `WebMvcConfigurer` CORS engedélyezés `/api/**`-re a Vite dev origin (5173) felé | Egyszerűbb, mint egy Vite dev-proxy, és ugyanaz a kliens kód működik dev és production build esetén is |
 
 ### Amit eldöntöttem
 
@@ -74,13 +76,22 @@
 4. **Idempotencia-kezelés** - done
 5. **Mockolt árfolyam API + reziliencia** - retry/timeout - done
 6. **Konkurencia-védelem** - done
-7. **Frontend: Számlák képernyő**.
+7. **Frontend: Számlák képernyő** - done
 8. **Frontend: Tranzakciók képernyő.**
 9. **Frontend: Utalások képernyő.**
 10. **Tesztek** (backend unit + integrációs a konkurenciára és idempotenciára; frontend komponens/E2E) —
    párhuzamosan íródnak az egyes lépésekkel, nem a végén egyben.
 11. **RendszerIntegráció**
-12. **Nem implementált funkctiók amikre nem volt időm vagy csak production verzióban implementálnám leírása** - ??????
+12. **Nem implementált funkctiók amikre nem volt időm vagy csak production verzióban implementálnám leírása** 
+- ??????
+
+## Tesztelés
+
+**Backend:** Manuálisan, Swagger UI-n teszteltem
+
+**Frontend:** a Számlák képernyőt manuálisan, egy headless böngészőn (Playwright) keresztül vezérelt
+forgatókönyvvel ellenőriztem: számlalista betöltése, új számla létrehozása a formon keresztül,
+majd az új sor megjelenése a táblázatban újratöltés nélkül — konzolhiba (pl. CORS) nélkül.
 
 ## Éles üzem
 
