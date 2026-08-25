@@ -77,7 +77,7 @@
 5. **Mockolt árfolyam API + reziliencia** - retry/timeout - done
 6. **Konkurencia-védelem** - done
 7. **Frontend: Számlák képernyő** - done
-8. **Frontend: Tranzakciók képernyő.**
+8. **Frontend: Tranzakciók képernyő** - done
 9. **Frontend: Utalások képernyő.**
 10. **Tesztek** (backend unit + integrációs a konkurenciára és idempotenciára; frontend komponens/E2E) —
    párhuzamosan íródnak az egyes lépésekkel, nem a végén egyben.
@@ -89,9 +89,12 @@
 
 **Backend:** Manuálisan, Swagger UI-n teszteltem
 
-**Frontend:** a Számlák képernyőt manuálisan, egy headless böngészőn (Playwright) keresztül vezérelt
-forgatókönyvvel ellenőriztem: számlalista betöltése, új számla létrehozása a formon keresztül,
-majd az új sor megjelenése a táblázatban újratöltés nélkül — konzolhiba (pl. CORS) nélkül.
+**Frontend:** a Számlák és a Tranzakciók képernyőt is manuálisan, egy headless böngészőn (Playwright)
+keresztül vezérelt forgatókönyvvel ellenőriztem: számlalista betöltése, új számla létrehozása a formon
+keresztül, majd az új sor megjelenése a táblázatban újratöltés nélkül; a Tranzakciók képernyőnél pedig
+azt, hogy a backendről lekért utalások (sikeres azonos devizás, sikertelen fedezethiány miatt, sikeres
+devizakonverziós) helyesen jelennek meg a számla-tulajdonos nevére feloldva, a megfelelő árfolyammal
+és állapot-jelöléssel — mindkét esetben konzolhiba (pl. CORS) nélkül.
 
 ## Éles üzem
 

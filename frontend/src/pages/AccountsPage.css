@@ -48,28 +48,3 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
-
-.form-error {
-  color: #d1394a;
-  font-size: 0.85rem;
-  margin-bottom: 0.5rem;
-}
-
-.accounts-list table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.accounts-list th,
-.accounts-list td {
-  text-align: left;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.accounts-list th {
-  color: var(--text-h);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}

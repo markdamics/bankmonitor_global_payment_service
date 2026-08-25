@@ -37,3 +37,14 @@ a TransferService-be a valódi devizakonverzióhoz. Lásd: [exchangerate/](backe
 
 5/Válasz: Elkészítette a Számlák képernyőt (lista + új számla létrehozása form), bekötve a backend
 `/api/accounts` végpontjaira, plusz a szükséges backend CORS engedélyt a Vite dev szerver origin-jéhez.[AccountsPage.tsx](frontend/src/pages/AccountsPage.tsx).
+
+---
+
+6/Kérés: "Create the transfers page with a transfers table, write the backend endpoints calling function in client.ts and style the page"
+
+6/Válasz: Elkészítette a Tranzakciók képernyőt: lekéri a `/api/transfers` és `/api/accounts` végpontokat,
+a számla-azonosítókat tulajdonos névre oldja fel, devizakonverziós utalásnál nyíllal jelzi az
+összeg-átváltást és az árfolyamot, a `COMPLETED`/`FAILED` státuszt pedig színes jelölővel jeleníti meg.
+A közös tábla- és hibaüzenet-stílusokat kiemelte az `App.css`-be, hogy a Számlák képernyő ne duplikálja
+őket. Headless böngészővel (Playwright) valósan kipróbálta, vizuális regressziót is ellenőrizve a
+Számlák képernyőn. Lásd: [TransactionsPage.tsx](frontend/src/pages/TransactionsPage.tsx).
