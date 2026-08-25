@@ -30,10 +30,10 @@ csomag a sikeres utalások külvilág felé történő továbbításáért (ld. 
 | Terület          | Döntés                          | Indoklás |
 |-------------------|----------------------------------|----------|
 | Nyelv/keretrendszer | React 19 + TypeScript          | Feladat által kötelező. |
-| Build tool        | Vite                             | Gyors dev-szerver, minimális konfiguráció, nincs szükség meta-frameworkre (SSR, routing a szerveren) egy belső admin-jellegű appnál. |
-| Routing           | react-router-dom                 | Három elkülönült képernyő (Számlák / Utalás / Tranzakciók) — kliensoldali routing egyszerű megoldás erre a méretre. |
-| Állapotkezelés    | React beépített state + fetch (tervezett: egy vékony API-kliens réteg `src/api`-ban) | A három képernyő nem indokol globális state-kezelőt (Redux/Zustand); szerver-állapot cache-elésre később megfontolandó `@tanstack/react-query` (ld. TODO). |
-| Styling           | Sima CSS (`App.css`)             | Nincs szükség design systemre egy 3 képernyős belső eszközhöz; komponenskönyvtár hozzáadása később egyszerű. |
+| Build tool        | Vite                             | Gyors dev-szerver, minimális konfiguráció |
+| Routing           | react-router-dom                 | Három elkülönült képernyő — kliensoldali routing egyszerű megoldás erre a méretre. |
+| Állapotkezelés    | React beépített state vagy redux, most még nem eldöntött |  |
+| Styling           | Sima CSS           | Külső UI library használata felesleges a feladat mérete miatt valamit AI-al készített css styling egyszerűbb és gyorsabb |
 
 ### Amit tudatosan elvetettem
 
