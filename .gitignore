@@ -11,6 +11,7 @@ frontend/*.local
 # Logs
 *.log
 npm-debug.log*
+backend/logs/
 
 # Editor / OS
 .vscode/*

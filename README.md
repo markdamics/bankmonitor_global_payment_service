@@ -24,6 +24,7 @@
 | Build tool  | Maven                                      | A feladat követelménye miatt valamint Gradle-ben nincs tapasztalatom|
 | Adatbázis   | H2 (in-memory)                             |  Ezen a szinten, kis felhasználásra felesleges egy SQL alapú adatbázis|
 | Loggolás    | SLF4J                                      | Alapértelmezett Spring boot logolás, nem volt indok mást használni  |
+| API dokumentáció / teszt | springdoc-openapi (Swagger UI) | Gyors kézi API-tesztelés Postman/curl nélkül, automatikusan generált a controllerekből |
 
 ### Frontend
 
@@ -85,6 +86,9 @@ mvn spring-boot:run
 ```
 
 A backend alapértelmezett címe: `http://localhost:8080`.
+
+API kézi teszteléséhez Swagger UI érhető el: `http://localhost:8080/swagger-ui/index.html`
+(nyers OpenAPI leírás: `http://localhost:8080/v3/api-docs`).
 
 Tesztek futtatása:
 
